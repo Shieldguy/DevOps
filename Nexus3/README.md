@@ -21,6 +21,7 @@
     - Put the **name** field. ex) `maven-snapshot`
     - Select `Snapshot` under the **Version policy**
     - Select **Blob store** above created for the snapshot
+    - Select **Allow redeploy** under the **Deployment policy**
     - Click **Save** button
   - Tab **Create repository** for release
     - Tab **maven (hosted)**
@@ -33,6 +34,7 @@
     - Put the **name** field. ex) `maven-central`
     - Select `Release` under the **Version policy**
     - Put `https://repo1.maven.org/maven2` to **Remote storage**
+    - Set `1440` to **Maximum component age**
     - Select **Blob store** above created for the proxy
     - Click **Save** button
   - Tab **Create repository** for group
