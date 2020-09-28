@@ -213,10 +213,84 @@
 
 ## Setup as a Npm repository
 
+### Nexus3 configuration
+
+- Create Blob store for maven private, proxy, group
+  - This is optional. But recommend create each blob stores.
+  - Move **Repository** -> **Blob Stores**
+  - Tab **Create blob store**
+  - Put the name each store
+
+- Create Repository for docker private, proxy, group
+  - Move **Repository** -> **Repositories**
+  - Tab **Create repository** for private
+    - Tab **npm (hosted)**
+    - Put the **name** field. ex) `npm-hosted`
+    - Select **Blob store** above created for the snapshot
+    - Select **Allow redeploy** under the **Deployment policy**
+    - Click **Save** button
+  - Tab **Create repository** for proxy
+    - Tab **npm (proxy)**
+    - Put the **name** field. ex) `npm-registry`
+    - Put `http://registry.npmjs.org/` to **Remote storage**
+    - Select **Blob store** above created for the proxy
+    - Click **Save** button
+  - Tab **Create repository** for group
+    - Tab **npm (group)**
+    - Put the **name** field. ex) `npm-group`
+    - Select **Blob store** above created for the group
+    - Add `npm-hosted`, and `npm-registry` to *Member* under the **Member repositories**
+    - Click **Save** button
+
+### Project configuration
+
+- Generator base64 password
+  ```
+  # echo -n 'admin:*******' | openssl base64
+  ```
+- Put following information with above base64 password to project **.npmrc** file when the project download dependencies.
+  ```
+  registry=http://your-host:8081/repository/npm-group/_auth=YWRtaW46YWRtaW4xMjM=
+  ```
+- Add user to **~/.npmrc** if you run `npm publish`
+- Set `email=yourid@email.com` to project **.npmrc** if publish from CI
+- Change **package.json**, if project publish
+  ```
+  {
+    ...
+    "publishConfig": {
+      "registry": "http://your-host:8081/repository/npm-hosted/"
+    }
+    ...
+  }
+  ```
+
+### Run
+
+- Command
+  ```
+  # npm install
+  or
+  # npm publish
+  ```
+
+### Install npm packages globally
+
+- Run command
+  ```
+  # npm --registry http://your-host:8081/repository/npm-group/ install -g ${own_package}
+  ```
+
+### Jenkins
+
 **In updating**
+
 
 ## References
 - [Sonatype Nexus3 OSS](https://www.sonatype.com/nexus/repository-oss)
-- [Nexus3 Installation](https://www.fosslinux.com/27838/installing-sonatype-nexus-repository-oss-on-centos-7.htm)
+- [Using Nexus 3 as your repository - Part 1: Maven artifacts](https://blog.sonatype.com/using-nexus-3-as-your-repository-part-1-maven-artifacts)
+- [Using Nexus 3 as your repository - Part 2: NPM packages](https://blog.sonatype.com/using-nexus-3-as-your-repository-part-2-npm-packages)
+- [Using Nexus 3 as your repository - Part 3: Docker images](https://blog.sonatype.com/using-nexus-3-as-your-repository-part-3-docker-images)
+- [Nexus3 Installation](https://www.fosslin3x.com/27838/installing-sonatype-nexus-repository-oss-on-centos-7.htm)
 - [Nexus3 Arm64 docker container image](https://hub.docker.com/r/klo2k/nexus3)
 - [Nexus3 Arm64 Dockerfile](https://github.com/klo2k/nexus3-docker)
