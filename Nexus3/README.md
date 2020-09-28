@@ -46,55 +46,54 @@
 
 - Linux
   - Add **/etc/docker/daemon.json** file and put following content.
-```
-{
-  "insecure-registries": [
-    "your-repo:8082",
-    "your-repo:8083"
-  ],
-  "disable-legacy-registry": true
-}
-```
+  ```
+  {
+    "insecure-registries": [
+      "your-repo:8082",
+      "your-repo:8083"
+    ],
+    "disable-legacy-registry": true
+  }
+  ```
   - Restart docker service `sudo systemctl restart docker.service`
 
 - Windows / MacOS
   - Add **Insecure registries** of **Config** -> **Daemon**
 
 - Jenkins
-
-** In updating **
+  - ** In updating **
 
 
 ### Authentication
 
 - Run command 
-```
-# docker login ${repo_hostname}:5000
-Username: admin
-Password: ********
-....
-Login Succeeded
-#
-# docker login ${repo_hostname}:5001
-Username: admin
-Password: ********
-....
-Login Succeeded
-```
+  ```
+  # docker login ${repo_hostname}:5000
+  Username: admin
+  Password: ********
+  ....
+  Login Succeeded
+  #
+  # docker login ${repo_hostname}:5001
+  Username: admin
+  Password: ********
+  ....
+  Login Succeeded
+  ```
 
 ### Image pull from docker-group
 
 - Pull image
-```
-# docker pull ${repo_hostname}:5001/httpd:2.4-alpine
-```
+  ```
+  # docker pull ${repo_hostname}:5001/httpd:2.4-alpine
+  ```
 
 ### Image push to docker-private
-- Push image
-```
-# docker tag ${target_image}:${target_tag} ${repo_hostname}:5000/${target_image}:${target_tag}
-# docker push ${repo_hostname}:5000/${target_image}:${target_tag}
-```
+  - Push image
+  ```
+  # docker tag ${target_image}:${target_tag} ${repo_hostname}:5000/${target_image}:${target_tag}
+  # docker push ${repo_hostname}:5000/${target_image}:${target_tag}
+  ```
 
 ## Setup as a Npm repository
 
