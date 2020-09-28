@@ -89,7 +89,7 @@
   ```
 
 ### Image push to docker-private
-  - Push image
+- Push image
   ```
   # docker tag ${target_image}:${target_tag} ${repo_hostname}:5000/${target_image}:${target_tag}
   # docker push ${repo_hostname}:5000/${target_image}:${target_tag}
