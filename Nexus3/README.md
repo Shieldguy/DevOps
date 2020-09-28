@@ -6,6 +6,120 @@
 
 ## Setup as a Maven repository
 
+### Nexus3 configuration
+
+- Create Blob store for maven snapshot, release, proxy, group
+  - This is optional. But recommend create each blob stores.
+  - Move **Repository** -> **Blob Stores**
+  - Tab **Create blob store**
+  - Put the name each store
+
+- Create Repository for docker snapshot, release, proxy, group
+  - Move **Repository** -> **Repositories**
+  - Tab **Create repository** for snapshot
+    - Tab **maven (hosted)**
+    - Put the **name** field. ex) `maven-snapshot`
+    - Select `Snapshot` under the **Version policy**
+    - Select **Blob store** above created for the snapshot
+    - Click **Save** button
+  - Tab **Create repository** for release
+    - Tab **maven (hosted)**
+    - Put the **name** field. ex) `maven-release`
+    - Select `Release` under the **Version policy**
+    - Select **Blob store** above created for the snapshot
+    - Click **Save** button
+  - Tab **Create repository** for proxy
+    - Tab **maven (proxy)**
+    - Put the **name** field. ex) `maven-central`
+    - Select `Release` under the **Version policy**
+    - Put `https://repo1.maven.org/maven2` to **Remote storage**
+    - Select **Blob store** above created for the proxy
+    - Click **Save** button
+  - Tab **Create repository** for group
+    - Tab **maven (group)**
+    - Put the **name** field. ex) `maven-group`
+    - Select **Blob store** above created for the group
+    - Add `maven-snapshot`, `maven-release`, and `maven-central` to *Member* under the **Member repositories**
+    - Click **Save** button
+
+### Maven client configuration
+
+- Put following information to **~/.m2/settings.xml** file.
+  ```
+  <?xml version="1.0" encoding="UTF-8"?>
+  <settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+
+    <servers>
+      <server>
+        <id>nexus-snapshots</id>
+        <username>admin</username>
+        <password>******</password>
+      </server>
+      <server>
+        <id>nexus-releases</id>
+        <username>admin</username>
+        <password>******</password>
+      </server>
+    </servers>
+
+    <mirrors>
+      <mirror>
+        <id>central</id>
+        <name>central</name>
+        <url>http://your-host:8081/repository/maven-group/</url>
+        <mirrorOf>*</mirrorOf>
+      </mirror>
+    </mirrors>
+
+  </settings>
+  ```
+
+### Project configuration
+
+- Repository on **pom.xml**
+  ```
+  <project ...>
+    ...
+    <repositories>
+      <repository>
+        <id>maven-group</id>
+        <url>http://your-host:8081/repository/maven-group/</url>
+      </repository>
+    </repositories>
+    ...
+  </project>
+  ```
+- Publish on **pom.xml**
+  ```
+  <project ...>
+    ...
+    <distributionManagement>
+      <snapshotRepository>
+        <id>nexus-snapshots</id>
+        <url>http://your-host:8081/repository/maven-snapshots/</url>
+      </snapshotRepository>
+      <repository>
+        <id>nexus-releases</id>
+        <url>http://your-host:8081/repository/maven-releases/</url>
+      </repository>
+    </distributionManagement>
+    ...
+  </project>
+  ```
+
+### Run
+
+- Command
+  ```
+  # mvn install
+  or
+  # mvn deploy
+  ```
+
+### Jenkins
+
 **In updating**
 
 ## Setup as a Docker repository
