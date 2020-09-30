@@ -1,0 +1,117 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.3.4.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+
+	id 'java-library'
+	id 'maven-publish'
+	id 'publishing'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+compileJava.options.encoding = 'UTF-8'
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+buildDir = 'target'
+
+/*
+java {
+	//withSourceJar()
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+*/
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+jar {
+	manifest {
+		attributes('Implementation-Title': project.name,
+				'Implementation-Version': project.version)
+	}
+}
+
+repositories {
+	maven {
+		url "http://storage2:8081/repository/maven-group/"
+        mavenContent {
+			releasesOnly()
+		}
+	}
+	maven {
+		url "http://storage2:8081/repository/maven-snapshot/"
+		mavenContent {
+			snapshotsOnly()
+		}
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact bootJar		// spring boot executable jar should use this
+			//from components.java	// library jar should use this
+
+			pom {
+				name = 'msa-demo'
+				description = 'My MSA demo application'
+				url = 'http://www.example.com/library'
+				licenses {
+					license {
+						name = 'The Apache License, Version 2.0'
+						url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+				developers {
+					developer {
+						id = 'your_id_here'
+						name = 'your_name_here'
+						email = 'your_email@example.com'
+					}
+				}
+				scm {
+					connection = 'scm:git:git://github.com/your_repo_here.git'
+					// developerConnection = 'scm:git:ssh://example.com/my-library.git'
+					url = 'http://example.com/your_url_here'
+				}
+			}
+		}
+	}
+
+	repositories {
+		maven {
+			name = "MavenLocal"
+			def releaseUrl = "http://storage2:8081/repository/maven-release/"
+			def snapshotUrl = "http://storage2:8081/repository/maven-snapshot/"
+			url = version.endsWith('SNAPSHOT') ? snapshotUrl: releaseUrl
+			credentials {
+                // command line : -DrepoUserId=??? -DrepoPasswd=???
+				username = System.properties['repoUserId']
+				password = System.properties['repoPasswd']
+			}
+		}
+	}
+}
